@@ -1,0 +1,20 @@
+version = 1
+revision = 1
+requires-python = ">=3.13"
+
+[[package]]
+name = "azerbaijani-tokenizer"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "sentencepiece" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "sentencepiece", specifier = ">=0.2.0" }]
+
+[[package]]
+name = "sentencepiece"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/d2/b9c7ca067c26d8ff085d252c89b5f69609ca93fb85a00ede95f4857865d4/sentencepiece-0.2.0.tar.gz", hash = "sha256:a52c19171daaf2e697dc6cbe67684e0fa341b1248966f6aebb541de654d15843", size = 2632106 }
