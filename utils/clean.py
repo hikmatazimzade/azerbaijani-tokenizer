@@ -75,7 +75,7 @@ def process_chunk(text: str) -> None:
     sentences = split_into_sentences(text)
     
     logger.info(f"{len(sentences)} sentences split in " 
-                f"{perf_counter() - start_time}")
+                f"{perf_counter() - start_time} seconds")
     
     for sentence in sentences:
         filter_res = quick_filter(sentence)
@@ -202,7 +202,7 @@ def install_datasets(dataset_names: Tuple[str,...]) -> List[str]:
             logger.error(f"Error occurred while installing "
                          f"{dataset_name}: {install_error}")
 
-        return file_paths
+    return file_paths
 
 
 def get_azerbaijani_dataset(dataset_names: Tuple[str,...]) -> None:
@@ -215,7 +215,8 @@ def get_azerbaijani_dataset(dataset_names: Tuple[str,...]) -> None:
         start = perf_counter()
         clean_file(file_path)
 
-        logger.info(f"Time took to clean the dataset: {perf_counter() - start}")
+        logger.info(f"Time took to clean the dataset"
+                    f": {perf_counter() - start} seconds")
 
 
 if __name__ == "__main__":
