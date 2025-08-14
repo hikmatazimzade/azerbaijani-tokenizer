@@ -3,6 +3,7 @@ from time import perf_counter
 from pathlib import Path
 import os
 import re
+import unicodedata
 
 from lingua import (
     Language,
@@ -69,11 +70,12 @@ def split_into_sentences(text: str) -> List[str]:
 
 
 def normalize_text(text: str) -> str:
-    """Remove problematic unicode characters & soft hyphens and
-    normalize multiple spaces"""
+    """Remove problematic unicode characters & soft hyphens,
+    normalize multiple spaces & unicode characters"""
     text = re.sub(r'[\u000C\u00A0\u200B\u200E\u200F\u00AD\uFEFF]', ' ', text)
     text = re.sub(r'-\n\s*', '', text)
     text = re.sub(r'\s+', ' ', text)
+    text = unicodedata.normalize("NFKC", text)
 
     return text.strip()
 
