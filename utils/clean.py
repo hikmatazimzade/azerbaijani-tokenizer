@@ -45,7 +45,7 @@ def quick_filter(sentence: str) -> Optional[bool]:
     sentence_lower = sentence.lower()
     words = sentence_lower.split()
 
-    if len(sentence_lower) < 50:
+    if len(sentence_lower) < 50 or has_cyrillic(sentence_lower):
         return False
 
     if any(char in AZ_CHARS for char in sentence_lower):
@@ -76,6 +76,11 @@ def normalize_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text)
 
     return text.strip()
+
+
+def has_cyrillic(text: str) -> bool:
+    """Check if the text contains cyrillic characters"""
+    return bool(re.search(r'[а-яА-ЯёЁ]', text))
 
 
 def process_chunk(text: str) -> None:
