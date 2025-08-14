@@ -194,8 +194,9 @@ def install_datasets(dataset_names: Tuple[str,...]) -> List[str]:
 
         try:
             install_dataset(dataset_name, file_path)
+            short_file_name = "/".join(file_path.split("/")[-2:])
 
-            logger.info(f"Successfully wrote text data to {file_path}")
+            logger.info(f"Successfully wrote text data to {short_file_name}")
             file_paths.append(file_path)
 
         except Exception as install_error:
