@@ -9,11 +9,15 @@ from lingua import (
     Language,
     LanguageDetectorBuilder
 )
+from datasets import (
+    load_dataset,
+    get_dataset_config_names
+)
+
+import nltk
 from nltk.tokenize import sent_tokenize
-from datasets import load_dataset, get_dataset_config_names
 from huggingface_hub import login
 from decouple import AutoConfig
-import nltk
 
 from utils.logger import get_logger
 from utils.config import ROOT_DIR
@@ -38,6 +42,8 @@ ENGLISH_COMMON_WORDS = ['the', 'is', 'are', 'was', 'were', 'have',
 config = AutoConfig()
 HUGGINGFACE_ACCESS_TOKEN = config("HUGGINGFACE_ACCESS_TOKEN")
 login(HUGGINGFACE_ACCESS_TOKEN)
+
+AZERBAIJANI_DATA_PATH = os.path.join(ROOT_DIR, "data", "azerbaijani_data.txt")
 
 
 def quick_filter(sentence: str) -> Optional[bool]:
@@ -111,7 +117,7 @@ def process_chunk(text: str) -> None:
             sentence = normalize_text(sentence)
             azerbaijani_sentences.append(sentence)
     
-    append_file(" ".join(azerbaijani_sentences))
+    append_file(" ".join(azerbaijani_sentences), AZERBAIJANI_DATA_PATH)
 
 
 def clean_dataset(file: open, row_number_per_chunk: int=1_000_000
@@ -134,22 +140,20 @@ def clean_dataset(file: open, row_number_per_chunk: int=1_000_000
         yield process_chunk(chunk_text)
 
 
-def append_file(text: str,
-            file_path: str=f"{ROOT_DIR}/data/azerbaijani_data.txt") -> None:
+def append_file(text: str, file_path: str) -> None:
     """Append text content to the given file"""
     with open(file=file_path, mode="a", encoding="utf-8") as azerbaijani_file:
         azerbaijani_file.write(text + "\n")
-        short_file_path = "/".join(file_path.split("/")[-2:])
+        short_file_path = "/".join(Path(file_path).parts[-2:])
         logger.info(f"Successfully written data to {short_file_path}")
 
 
-def prune_file(file_path: str=f"{ROOT_DIR}"
-                    "/data/azerbaijani_data.txt") -> None:
+def prune_file(file_path: str) -> None:
     """Prune all the content of the given file"""
     with open(file_path, "w") as file:
         file.write("")
 
-    short_file_path = "/".join(file_path.split("/")[-2:])
+    short_file_path = "/".join(Path(file_path).parts[-2:])
     logger.info(f"Pruned content of {short_file_path}")
 
 
@@ -217,7 +221,7 @@ def install_datasets(dataset_names: Tuple[str,...]) -> List[str]:
 
         try:
             install_dataset(dataset_name, file_path)
-            short_file_path = "/".join(file_path.split("/")[-2:])
+            short_file_path = "/".join(Path(file_path).parts[-2:])
 
             logger.info(f"Successfully wrote text data to {short_file_path}")
             file_paths.append(file_path)
@@ -231,8 +235,8 @@ def install_datasets(dataset_names: Tuple[str,...]) -> List[str]:
 
 def get_azerbaijani_dataset(dataset_names: Tuple[str,...]) -> None:
     """Get azerbaijani_data.txt file that contains cleaned text"""
-    create_file(f"{ROOT_DIR}/data/azerbaijani_data.txt")
-    prune_file()
+    create_file(AZERBAIJANI_DATA_PATH)
+    prune_file(AZERBAIJANI_DATA_PATH)
 
     file_paths = install_datasets(dataset_names)
 
