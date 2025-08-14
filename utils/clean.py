@@ -2,6 +2,7 @@ from typing import List, Generator, Optional, Tuple
 from time import perf_counter
 from pathlib import Path
 import os
+import re
 
 from lingua import (
     Language,
@@ -67,6 +68,16 @@ def split_into_sentences(text: str) -> List[str]:
     return sentences
 
 
+def normalize_text(text: str) -> str:
+    """Remove problematic unicode characters & soft hyphens and
+    normalize multiple spaces"""
+    text = re.sub(r'[\u000C\u00A0\u200B\u200E\u200F\u00AD\uFEFF]', ' ', text)
+    text = re.sub(r'-\n\s*', '', text)
+    text = re.sub(r'\s+', ' ', text)
+
+    return text.strip()
+
+
 def process_chunk(text: str) -> None:
     """Process and clean the given text for the tokenizer training"""
     azerbaijani_sentences: List[str] = []
@@ -82,6 +93,7 @@ def process_chunk(text: str) -> None:
 
         if filter_res is not None:
             if filter_res:
+                sentence = normalize_text(sentence)
                 azerbaijani_sentences.append(sentence)
             
             continue
@@ -89,6 +101,7 @@ def process_chunk(text: str) -> None:
         language = LANGUAGE_DETECTOR.detect_language_of(sentence)
 
         if language and language.name == "AZERBAIJANI":
+            sentence = normalize_text(sentence)
             azerbaijani_sentences.append(sentence)
     
     append_file(" ".join(azerbaijani_sentences))
@@ -115,11 +128,12 @@ def clean_dataset(file: open, row_number_per_chunk: int=1_000_000
 
 
 def append_file(text: str,
-            file_name: str=f"{ROOT_DIR}/data/azerbaijani_data.txt") -> None:
+            file_path: str=f"{ROOT_DIR}/data/azerbaijani_data.txt") -> None:
     """Append text content to the given file"""
-    with open(file=file_name, mode="a", encoding="utf-8") as azerbaijani_file:
-        azerbaijani_file.write(text)
-        logger.info(f"Successfully written data to {file_name} file")
+    with open(file=file_path, mode="a", encoding="utf-8") as azerbaijani_file:
+        azerbaijani_file.write(text + "\n")
+        short_file_path = "/".join(file_path.split("/")[-2:])
+        logger.info(f"Successfully written data to {short_file_path}")
 
 
 def prune_file(file_path: str=f"{ROOT_DIR}"
@@ -127,7 +141,9 @@ def prune_file(file_path: str=f"{ROOT_DIR}"
     """Prune all the content of the given file"""
     with open(file_path, "w") as file:
         file.write("")
-    logger.info(f"Pruned content of {file_path}")
+
+    short_file_path = "/".join(file_path.split("/")[-2:])
+    logger.info(f"Pruned content of {short_file_path}")
 
 
 def clean_file(file_name: str) -> None:
@@ -194,9 +210,9 @@ def install_datasets(dataset_names: Tuple[str,...]) -> List[str]:
 
         try:
             install_dataset(dataset_name, file_path)
-            short_file_name = "/".join(file_path.split("/")[-2:])
+            short_file_path = "/".join(file_path.split("/")[-2:])
 
-            logger.info(f"Successfully wrote text data to {short_file_name}")
+            logger.info(f"Successfully wrote text data to {short_file_path}")
             file_paths.append(file_path)
 
         except Exception as install_error:
@@ -210,6 +226,7 @@ def get_azerbaijani_dataset(dataset_names: Tuple[str,...]) -> None:
     """Get azerbaijani_data.txt file that contains cleaned text"""
     create_file(f"{ROOT_DIR}/data/azerbaijani_data.txt")
     prune_file()
+
     file_paths = install_datasets(dataset_names)
 
     for file_path in file_paths:
