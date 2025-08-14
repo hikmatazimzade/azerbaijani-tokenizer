@@ -117,7 +117,7 @@ def process_chunk(text: str) -> None:
             sentence = normalize_text(sentence)
             azerbaijani_sentences.append(sentence)
     
-    append_file(" ".join(azerbaijani_sentences), AZERBAIJANI_DATA_PATH)
+    append_file(azerbaijani_sentences, AZERBAIJANI_DATA_PATH)
 
 
 def clean_dataset(file: open, row_number_per_chunk: int=1_000_000
@@ -140,12 +140,13 @@ def clean_dataset(file: open, row_number_per_chunk: int=1_000_000
         yield process_chunk(chunk_text)
 
 
-def append_file(text: str, file_path: str) -> None:
+def append_file(sentences: List[str], file_path: str) -> None:
     """Append text content to the given file"""
-    with open(file=file_path, mode="a", encoding="utf-8") as azerbaijani_file:
-        azerbaijani_file.write(text + "\n")
-        short_file_path = "/".join(Path(file_path).parts[-2:])
-        logger.info(f"Successfully written data to {short_file_path}")
+    with open(file=file_path, mode="a", encoding="utf-8") as azerbaijani_file:\
+        azerbaijani_file.writelines(sentence + "\n" for sentence in sentences)
+
+    short_file_path = "/".join(Path(file_path).parts[-2:])
+    logger.info(f"Successfully written data to {short_file_path}")
 
 
 def prune_file(file_path: str) -> None:
