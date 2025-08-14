@@ -8,6 +8,8 @@ dependencies = [
     "datasets>=4.0.0",
     "lingua-language-detector>=2.1.1",
     "nltk>=3.9.1",
+    "protobuf>=6.31.1",
     "python-decouple>=3.8",
     "sentencepiece>=0.2.0",
+    "transformers>=4.55.2",
 ]
