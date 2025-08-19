@@ -1,7 +1,7 @@
 # Azerbaijani Tokenizer
 
 High-performance tokenizers built specifically for Azerbaijani language. 
-Trained with BPE and Unigram algorithms. these tokenizers deliver 30% 
+Trained with BPE and Unigram algorithms, these tokenizers deliver 30% 
 fewer tokens and 40% faster processing than multilingual alternatives.
 
 ## 🎬 Demo Video
@@ -92,6 +92,11 @@ token_ids = tokenizer.encode(text)
 
 # Decode
 decoded_text = tokenizer.decode(token_ids)
+
+# Print output
+print(f"Tokens: {tokens}")
+print(f"Token Ids: {token_ids}")
+print(f"Decoded text: {decoded_text}")
 ```
 
 ## 📝 Example Tokenization
